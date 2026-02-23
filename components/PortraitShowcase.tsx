@@ -213,7 +213,7 @@ function PortraitSlideshow({
                   <img
                     src={item.src}
                     alt={item.title}
-                    className={`h-full w-full object-fill object-center transition-all duration-700 ${
+                    className={`h-full w-full object-cover object-center transition-all duration-700 ${
                       isActive ? "scale-100" : "scale-105"
                     } group-hover/slide:scale-105`}
                     draggable={false}
@@ -425,13 +425,6 @@ export default function PortraitShowcase({ pages }: { pages: PortraitPage[] }) {
             style={{
               backgroundImage: `url(${leftImage})`,
               filter: "drop-shadow(0 4px 18px rgba(0,0,0,0.18))",
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(to right, transparent 0%, transparent 94%, rgba(0,0,0,0.06) 100%)",
             }}
           />
         </div>
