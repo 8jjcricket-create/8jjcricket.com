@@ -1,6 +1,6 @@
 "use client";
 
-import { Headphones, Music2, TvMinimalPlay, VolumeOff } from "lucide-react";
+import { Volume2, VolumeOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCallback, useState } from "react";
 import MusicPopup from "@/components/MusicPopup";
@@ -89,7 +89,7 @@ export default function MobileFloatingSupport() {
           {isMuted ? (
             <VolumeOff size={22} className="text-white" />
           ) : (
-            <Music2 size={22} className="text-white" />
+            <Volume2 size={22} className="text-white" />
           )}
         </button>
       </motion.div>
