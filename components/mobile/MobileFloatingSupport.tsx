@@ -73,11 +73,11 @@ export default function MobileFloatingSupport() {
           onClick={openMusicPopup}
           aria-label="Open Music Player"
         >
-          {isPlaying ? (
-            <PlayingAnimation />
-          ) : (
-            <TvMinimalPlay size={22} className="text-white" />
-          )}
+          <img
+            src="/icons/music-player.png"
+            alt="Music Player"
+            className="w-7 h-7 object-contain"
+          />
         </button>
 
         {/* 🔇 Mute / Unmute */}
