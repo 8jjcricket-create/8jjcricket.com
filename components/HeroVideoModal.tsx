@@ -8,12 +8,14 @@ interface HeroVideoModalProps {
   isOpen: boolean;
   onClose: () => void;
   videoUrl: string;
+  latestEvent?: any;
 }
 
 export default function HeroVideoModal({
   isOpen,
   onClose,
   videoUrl,
+  latestEvent,
 }: HeroVideoModalProps) {
   useEffect(() => {
     if (isOpen) {
@@ -52,16 +54,39 @@ export default function HeroVideoModal({
 
         {/* Main Content */}
         <div className="relative aspect-video w-full overflow-hidden rounded-2xl border-4 border-india-gold/30 bg-black">
-          {/* Video Player */}
-          <video
-            src={videoUrl}
-            autoPlay
-            loop
-            muted={false}
-            playsInline
-            controls
-            className="absolute inset-0 h-full w-full object-contain sm:object-cover"
-          />
+          {latestEvent ? (
+            <a
+              href={`/news/${latestEvent.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute inset-0 block group/event"
+            >
+              <img
+                src={latestEvent.image_url}
+                alt={latestEvent.title}
+                className="h-full w-full object-contain sm:object-cover transition-transform duration-500 group-hover/event:scale-105"
+              />
+              <div className="absolute inset-0 bg-black/20 group-hover/event:bg-black/0 transition-colors" />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-6 pt-12">
+                <h2 className="text-xl md:text-2xl font-bold text-india-gold line-clamp-2">
+                  {latestEvent.title}
+                </h2>
+                <span className="mt-2 inline-block text-sm font-semibold text-white/80 group-hover/event:text-white transition-colors">
+                  Click to read more →
+                </span>
+              </div>
+            </a>
+          ) : (
+            <video
+              src={videoUrl}
+              autoPlay
+              loop
+              muted={false}
+              playsInline
+              controls
+              className="absolute inset-0 h-full w-full object-contain sm:object-cover"
+            />
+          )}
           
           {/* Animated Background Pattern (behind video) */}
           <div className="absolute inset-0 opacity-10 pointer-events-none">

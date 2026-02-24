@@ -6,10 +6,12 @@ import { useAudio } from "@/context/AudioContext";
 
 interface MobileInteractiveHeroVideoProps {
   videoUrl: string;
+  latestEvent?: any;
 }
 
 export default function MobileInteractiveHeroVideo({
   videoUrl,
+  latestEvent,
 }: MobileInteractiveHeroVideoProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -97,6 +99,7 @@ export default function MobileInteractiveHeroVideo({
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         videoUrl={videoUrl}
+        latestEvent={latestEvent}
       />
     </>
   );
