@@ -9,6 +9,14 @@ import DesktopOnly from "@/components/DesktopOnly";
 import FloatingSupport from "@/components/FloatingSupport";
 import { AudioProvider } from "@/context/AudioContext";
 import PWAExtras from "@/components/PWAExtras";
+import { Luckiest_Guy } from "next/font/google";
+
+const luckiestGuy = Luckiest_Guy({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-luckiest-guy",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -96,7 +104,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen overflow-x-hidden antialiased selection:bg-blue-100 selection:text-blue-800">
+      <body className={`${luckiestGuy.variable} min-h-screen overflow-x-hidden antialiased selection:bg-blue-100 selection:text-blue-800`}>
         <ThemeProvider>
           <ToastProvider>
             <AudioProvider>

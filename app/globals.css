@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap");
 
 /* ============================================================
    8JJCRICKET — GLOBAL STYLES
@@ -805,7 +804,7 @@ a {
 .logo3d-letter {
   position: relative;
   display: inline-block;
-  font-family: "Luckiest Guy", cursive;
+  font-family: var(--font-luckiest-guy), Impact, "Arial Narrow Bold", sans-serif;
   font-size: clamp(16px, 1.8vw, 24px);
   line-height: 1;
   text-transform: uppercase;
