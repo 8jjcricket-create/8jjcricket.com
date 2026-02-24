@@ -82,14 +82,7 @@ export default function InteractiveHeroVideo({
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-india-gold shadow-lg group-hover:bg-white transition-colors duration-500">
                 <Trophy className="h-6 w-6 text-black" />
               </div>
-              <div className="flex flex-col pr-2">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-india-gold group-hover:text-black transition-colors duration-500">
-                  Featured
-                </span>
-                <span className="text-lg font-black text-white group-hover:text-black transition-colors duration-500">
-                  LATEST EVENT
-                </span>
-              </div>
+           
             </div>
           </div>
         </div>

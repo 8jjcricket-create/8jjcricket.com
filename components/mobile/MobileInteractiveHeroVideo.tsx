@@ -86,14 +86,6 @@ export default function MobileInteractiveHeroVideo({
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-india-gold shadow-lg">
                   <Trophy className="h-4 w-4 text-black" />
                 </div>
-                <div className="flex flex-col pr-1">
-                  <span className="text-[8px] font-bold uppercase tracking-wider text-india-gold">
-                    Latest
-                  </span>
-                  <span className="text-sm font-black text-white">
-                    EVENT
-                  </span>
-                </div>
               </div>
             </div>
           </div>
