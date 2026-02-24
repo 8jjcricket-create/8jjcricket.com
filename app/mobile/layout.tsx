@@ -269,7 +269,6 @@ export default function MoblieLayout({ children }: { children: ReactNode }) {
                       },
                     }}
                     className="logo3d-letter"
-                    style={{ fontSize: "16px" }}
                   >
                     {letter}
                   </motion.span>
