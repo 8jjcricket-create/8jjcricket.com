@@ -23,7 +23,9 @@ function SectionWrapper({
     offset: ["start end", "end start"]
   });
 
-  // Simple opacity fade for smoothness
+  // Very subtle 3D-like transforms
+  const rotateX = useTransform(scrollYProgress, [0, 0.5, 1], [5, 0, -5]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.98, 1, 0.98]);
   const opacity = useTransform(scrollYProgress, [0, 0.45, 0.55, 1], [0.5, 1, 1, 0.5]);
 
   return (
@@ -32,7 +34,10 @@ function SectionWrapper({
       data-index={idx}
       style={{
         height: containerHeight ? `${containerHeight}px` : "100vh",
+        rotateX,
+        scale,
         opacity,
+        transformStyle: "preserve-3d",
       }}
       className="section-wrapper w-full snap-start snap-always overflow-hidden"
     >
@@ -127,7 +132,7 @@ export default function HomeVerticalSwiper({ children }: { children: React.React
           overscrollBehavior: "none",
           WebkitOverflowScrolling: "touch",
         }}
-        className="relative w-full overflow-y-auto snap-y snap-mandatory scrollbar-hide"
+        className="relative w-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory scrollbar-hide perspective-2000 preserve-3d"
       >
         {childrenArray.map((child: React.ReactNode, idx: number) => (
           <SectionWrapper
