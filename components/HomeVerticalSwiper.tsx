@@ -107,6 +107,10 @@ export default function HomeVerticalSwiper({ children }: { children: React.React
     return () => observer.disconnect();
   }, [childrenArray.length, activeIndex]);
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("home-slide-change", { detail: activeIndex }));
+  }, [activeIndex]);
+
   const handleSectionClick = (index: number) => {
     const el = sectionRefs.current[index];
     const container = containerRef.current;
