@@ -1,62 +1,30 @@
 import { NextResponse } from "next/server";
-import { BACKEND_URL_API } from "../backendurl";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://72.60.107.98:8001/api";
 
-/**
- * GET /api/video-sections
- * GET /api/video-sections?slug=xyz
- */
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const slug = searchParams.get("slug");
-
-    // Build backend URL
-    const backendUrl = slug
-      ? `${BACKEND_URL_API}/video-sections/${encodeURIComponent(slug)}`
-      : `${BACKEND_URL_API}/video-sections`;
-
-    console.log("Fetching video sections from:", backendUrl);
-
-    const response = await fetch(backendUrl, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+    const res = await fetch(
+      `${BACKEND_URL.replace(/\/+$/, "")}/video-sections`,
+      {
+        cache: "no-store",
       },
-      cache: "no-store",
-      signal: AbortSignal.timeout(10000),
-    });
+    );
 
-    if (!response.ok) {
-      const text = await response.text();
-      console.error("❌ Backend error:", response.status, text);
-
+    if (!res.ok) {
       return NextResponse.json(
-        {
-          error: "Failed to fetch video section(s)",
-          status: response.status,
-          details: text,
-        },
-        { status: response.status },
+        { error: "Failed to fetch from backend" },
+        { status: res.status },
       );
     }
 
-    const data = await response.json();
-
-    console.log("✅ Successfully fetched video section(s)");
-
+    const data = await res.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error("❌ Error fetching video section(s):", error);
-
+    console.error("API Error:", error);
     return NextResponse.json(
-      {
-        error:
-          error instanceof Error ? error.message : "Unknown error occurred",
-      },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }
