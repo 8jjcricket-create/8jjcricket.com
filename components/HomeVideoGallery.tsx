@@ -10,6 +10,7 @@ import {
   Clock,
 } from "lucide-react";
 import { VideoSectionItem } from "@/types/video";
+import { useAudio } from "@/context/AudioContext";
 
 export default function HomeVideoGallery() {
   const [activeMainCat, setActiveMainCat] = useState("All");
@@ -19,7 +20,11 @@ export default function HomeVideoGallery() {
     null,
   );
   const playlistRef = React.useRef<HTMLDivElement>(null);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const wasPlayingBefore = React.useRef<boolean>(false);
   const [visibleCount, setVisibleCount] = useState<number>(6);
+
+  const { isPlaying, togglePlay } = useAudio();
 
   // adjust number of visible playlist items based on window height
   useEffect(() => {
@@ -45,12 +50,45 @@ export default function HomeVideoGallery() {
     }
   };
 
+  // when the currentVideo element plays/pauses we need to sync audio
+  useEffect(() => {
+    const vid = videoRef.current;
+    if (!vid) return;
+
+    const handlePlay = () => {
+      // background music currently playing?
+      if (isPlaying) {
+        wasPlayingBefore.current = true;
+        togglePlay(); // pause background
+      } else {
+        wasPlayingBefore.current = false;
+      }
+    };
+
+    const handlePause = () => {
+      if (wasPlayingBefore.current && !isPlaying) {
+        // resume only if we paused it when the video started
+        togglePlay();
+      }
+    };
+
+    vid.addEventListener("play", handlePlay);
+    vid.addEventListener("pause", handlePause);
+
+    return () => {
+      vid.removeEventListener("play", handlePlay);
+      vid.removeEventListener("pause", handlePause);
+    };
+  }, [isPlaying, togglePlay, currentVideo]);
+
   useEffect(() => {
     async function fetchData() {
       try {
         const res = await fetch("/api/video-sections");
         if (!res.ok) throw new Error("Failed to fetch");
         const data = await res.json();
+        console.log("data", data);
+
         setVideos(data);
         if (data.length > 0) setCurrentVideo(data[0]);
       } catch (err) {
@@ -103,7 +141,7 @@ export default function HomeVideoGallery() {
   return (
     <div className="w-full h-full text-white overflow-hidden p-6 lg:p-10">
       <div
-        className="max-w-[2050px] mx-auto h-full grid grid-cols-[minmax(0,2fr),minmax(0,8fr),minmax(0,2fr)]
+        className="max-w-[1650px] mx-auto h-full grid grid-cols-[minmax(0,2fr),minmax(0,8fr),minmax(0,2fr)]
         lg:grid-cols-[2fr,8fr,2fr]      /* optional breakpoints */
         sm:grid-cols-1 
         gap-8"
@@ -152,6 +190,7 @@ export default function HomeVideoGallery() {
           <div className="relative rounded-2xl overflow-hidden bg-black/40 border border-white/10 shadow-2xl aspect-video w-full">
             {currentVideo ? (
               <video
+                ref={videoRef}
                 key={currentVideo.id}
                 src={normalizeVideoUrl(currentVideo.video_path)}
                 controls
@@ -174,17 +213,16 @@ export default function HomeVideoGallery() {
           {/* Video meta */}
           {currentVideo && (
             <div className="space-y-1 px-1">
-              <h2 className="text-2xl font-black text-white uppercase tracking-tight">
+              <h2 className="text-2xl font-black text-india-gold uppercase tracking-tight">
                 {currentVideo.title}
               </h2>
               <div className="flex items-center gap-6 text-white/50 text-xs font-bold uppercase tracking-widest">
-                <span className="flex items-center gap-2">
+                {/* <span className="flex items-center gap-2">
                   <Calendar size={14} className="text-india-gold" />
                   {currentVideo.published_at || "January 18, 2026"}
-                </span>
+                </span> */}
                 <span className="flex items-center gap-2">
-                  <Clock size={14} className="text-india-gold" />
-                  00:00
+                  {currentVideo.category}
                 </span>
               </div>
               {currentVideo.description && (
@@ -215,8 +253,8 @@ export default function HomeVideoGallery() {
             style={{
               maxHeight: `${visibleCount * 82}px`,
             }}
-            onWheel={(e) => e.stopPropagation()} // ← ADD THIS
-            onTouchMove={(e) => e.stopPropagation()} // ← AND THIS
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
           >
             {filteredVideos.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-40 text-white/20 gap-3">
@@ -245,8 +283,17 @@ export default function HomeVideoGallery() {
                   <div className="relative w-24 h-16 rounded-lg overflow-hidden bg-black/60 border border-white/10 shrink-0">
                     {video.thumbnail_url ? (
                       <img
-                        src={video.thumbnail_url}
+                        src={normalizeVideoUrl(video.thumbnail_url)}
                         alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    ) : video.video_path ? (
+                      // fallback: render a muted tiny video to give preview
+                      <video
+                        src={normalizeVideoUrl(video.video_path)}
+                        muted
+                        playsInline
+                        loop
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -254,15 +301,11 @@ export default function HomeVideoGallery() {
                         <Play size={16} className="text-white/20" />
                       </div>
                     )}
-                    {/* Duration badge */}
-                    <span className="absolute bottom-1 right-1 bg-black/90 text-[9px] px-1.5 py-0.5 rounded font-mono text-white border border-white/10">
-                      00:00
-                    </span>
                   </div>
 
                   {/* Info */}
                   <div className="flex flex-col justify-center min-w-0 flex-1">
-                    <div className="text-india-gold text-[9px] font-black uppercase tracking-[0.15em] mb-1">
+                    <div className="text-amber-400 text-[9px] font-black uppercase tracking-[0.15em] mb-1">
                       {String(video.category) || "Cricket"}
                     </div>
                     <h4
@@ -274,10 +317,6 @@ export default function HomeVideoGallery() {
                     >
                       {video.title}
                     </h4>
-                    <div className="flex items-center gap-1.5 mt-1.5 text-[9px] text-white/30 uppercase font-bold tracking-widest">
-                      <Calendar size={10} />
-                      {video.published_at || "18/01/2026"}
-                    </div>
                   </div>
                 </button>
               ))
