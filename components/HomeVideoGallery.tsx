@@ -6,6 +6,8 @@ import { VideoSectionItem } from "@/types/video";
 import { useAudio } from "@/context/AudioContext";
 
 export default function HomeVideoGallery() {
+  const { isPlaying, togglePlay } = useAudio();
+
   const [activeMainCat, setActiveMainCat] = useState("All");
   const [videos, setVideos] = useState<VideoSectionItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,9 +17,42 @@ export default function HomeVideoGallery() {
   const playlistRef = React.useRef<HTMLDivElement>(null);
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const wasPlayingBefore = React.useRef<boolean>(false);
+  const isPlayingRef = React.useRef<boolean>(isPlaying);
+
+  // keep ref up to date with context state, avoids stale closure in handlers
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
   const [visibleCount, setVisibleCount] = useState<number>(6);
 
-  const { isPlaying, togglePlay } = useAudio();
+  const scrollPlaylist = (direction: "up" | "down") => {
+    if (playlistRef.current) {
+      playlistRef.current.scrollBy({
+        top: direction === "up" ? -200 : 200,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handlePlay = () => {
+    // background music currently playing?
+    if (isPlaying) {
+      wasPlayingBefore.current = true;
+      togglePlay(); // pause background
+    }
+  };
+
+  const handlePause = () => {
+    if (wasPlayingBefore.current) {
+      togglePlay();
+      wasPlayingBefore.current = false;
+    }
+  };
+
+  const selectVideoHandler = (videoSelected: VideoSectionItem) => {
+    setCurrentVideo(videoSelected);
+    handlePlay();
+  };
 
   // adjust number of visible playlist items based on window height
   useEffect(() => {
@@ -34,36 +69,10 @@ export default function HomeVideoGallery() {
     return () => window.removeEventListener("resize", updateCount);
   }, []);
 
-  const scrollPlaylist = (direction: "up" | "down") => {
-    if (playlistRef.current) {
-      playlistRef.current.scrollBy({
-        top: direction === "up" ? -200 : 200,
-        behavior: "smooth",
-      });
-    }
-  };
-
   // when the currentVideo element plays/pauses we need to sync audio
   useEffect(() => {
     const vid = videoRef.current;
     if (!vid) return;
-
-    const handlePlay = () => {
-      // background music currently playing?
-      if (isPlaying) {
-        wasPlayingBefore.current = true;
-        togglePlay(); // pause background
-      } else {
-        wasPlayingBefore.current = false;
-      }
-    };
-
-    const handlePause = () => {
-      if (wasPlayingBefore.current && !isPlaying) {
-        // resume only if we paused it when the video started
-        togglePlay();
-      }
-    };
 
     vid.addEventListener("play", handlePlay);
     vid.addEventListener("pause", handlePause);
@@ -74,6 +83,7 @@ export default function HomeVideoGallery() {
     };
   }, [isPlaying, togglePlay, currentVideo]);
 
+  // Load video sections from backend API
   useEffect(() => {
     async function fetchData() {
       try {
@@ -109,6 +119,15 @@ export default function HomeVideoGallery() {
   useEffect(() => {
     if (filteredVideos.length > 0) setCurrentVideo(filteredVideos[0]);
   }, [activeMainCat]);
+
+  // when currentVideo changes we attempt to auto-play the element
+  useEffect(() => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    vid.play().catch(() => {
+      /* user interaction likely required, ignore */
+    });
+  }, [currentVideo]);
 
   const normalizeVideoUrl = (path: string) => {
     if (!path) return "";
@@ -258,7 +277,7 @@ export default function HomeVideoGallery() {
               filteredVideos.map((video) => (
                 <button
                   key={video.id}
-                  onClick={() => setCurrentVideo(video)}
+                  onClick={() => selectVideoHandler(video)}
                   className={`w-full flex items-stretch gap-3 p-3 rounded-2xl transition-all duration-300 border relative overflow-hidden text-left ${
                     currentVideo?.id === video.id
                       ? "bg-white/10 border-india-gold/40 shadow-lg"
