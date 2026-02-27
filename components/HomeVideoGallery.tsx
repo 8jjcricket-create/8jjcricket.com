@@ -4,7 +4,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import {
   Play,
   PlayCircle,
-  ChevronRight,
   ChevronUp,
   ChevronDown,
   Calendar,
@@ -16,8 +15,26 @@ export default function HomeVideoGallery() {
   const [activeMainCat, setActiveMainCat] = useState("All");
   const [videos, setVideos] = useState<VideoSectionItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentVideo, setCurrentVideo] = useState<VideoSectionItem | null>(null);
+  const [currentVideo, setCurrentVideo] = useState<VideoSectionItem | null>(
+    null,
+  );
   const playlistRef = React.useRef<HTMLDivElement>(null);
+  const [visibleCount, setVisibleCount] = useState<number>(6);
+
+  // adjust number of visible playlist items based on window height
+  useEffect(() => {
+    const updateCount = () => {
+      const h = window.innerHeight;
+      if (h < 556) setVisibleCount(5);
+      else if (h < 740) setVisibleCount(5);
+      else if (h < 916) setVisibleCount(6);
+      else setVisibleCount(8);
+    };
+
+    updateCount();
+    window.addEventListener("resize", updateCount);
+    return () => window.removeEventListener("resize", updateCount);
+  }, []);
 
   const scrollPlaylist = (direction: "up" | "down") => {
     if (playlistRef.current) {
@@ -75,7 +92,9 @@ export default function HomeVideoGallery() {
       <div className="w-full h-full flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-india-gold" />
-          <span className="text-india-gold/60 font-medium animate-pulse">Loading Gallery...</span>
+          <span className="text-india-gold/60 font-medium animate-pulse">
+            Loading Gallery...
+          </span>
         </div>
       </div>
     );
@@ -83,10 +102,14 @@ export default function HomeVideoGallery() {
 
   return (
     <div className="w-full h-full text-white overflow-hidden p-6 lg:p-10">
-      <div className="max-w-[1550px] mx-auto h-full grid grid-cols-[280px,1fr,380px] gap-8">
-
+      <div
+        className="max-w-[2050px] mx-auto h-full grid grid-cols-[minmax(0,2fr),minmax(0,8fr),minmax(0,2fr)]
+        lg:grid-cols-[2fr,8fr,2fr]      /* optional breakpoints */
+        sm:grid-cols-1 
+        gap-8"
+      >
         {/* ── LEFT SIDEBAR: Categories ── */}
-        <div className="space-y-3 pt-4 overflow-y-auto scrollbar-hide">
+        <div className="space-y-3 pt-4 overflow-y-auto scrollbar-hide min-w-0">
           {/* ALL button */}
           <button
             onClick={() => setActiveMainCat("All")}
@@ -97,7 +120,9 @@ export default function HomeVideoGallery() {
             }`}
           >
             <PlayCircle size={18} />
-            <span className="font-black text-base tracking-tight uppercase">All</span>
+            <span className="font-black text-base tracking-tight uppercase">
+              All
+            </span>
           </button>
 
           {categories.map((cat) => (
@@ -114,13 +139,15 @@ export default function HomeVideoGallery() {
                 <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent pointer-events-none" />
               )}
               <PlayCircle size={18} className="shrink-0" />
-              <span className="font-black text-base tracking-tight uppercase truncate">{cat}</span>
+              <span className="font-black text-base tracking-tight uppercase truncate">
+                {cat}
+              </span>
             </button>
           ))}
         </div>
 
         {/* ── CENTER: Video Player ── */}
-        <div className="flex flex-col gap-4 pt-4 min-h-0 overflow-hidden">
+        <div className="flex flex-col gap-4 pt-4 min-h-0 min-w-0 overflow-hidden">
           {/* Player */}
           <div className="relative rounded-2xl overflow-hidden bg-black/40 border border-white/10 shadow-2xl aspect-video w-full">
             {currentVideo ? (
@@ -128,7 +155,7 @@ export default function HomeVideoGallery() {
                 key={currentVideo.id}
                 src={normalizeVideoUrl(currentVideo.video_path)}
                 controls
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
                 poster={currentVideo.thumbnail_url}
               />
             ) : (
@@ -170,26 +197,33 @@ export default function HomeVideoGallery() {
         </div>
 
         {/* ── RIGHT: Playlist ── */}
-        <div className="flex flex-col pt-4 min-h-0 gap-3">
-
+        <div className="flex flex-col pt-4 min-h-0 min-w-0 gap-3">
           {/* Scroll Up */}
           <button
             onClick={() => scrollPlaylist("up")}
-            className="w-full flex items-center justify-center py-1 text-white/30 hover:text-india-gold transition-colors"
+            className="w-full flex items-center justify-center py-1 text-white/30 hover:text-india-gold transition-colors "
           >
-            <ChevronUp size={20} />
+            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+              <ChevronUp size={25} className="text-india-gold" />
+            </div>
           </button>
 
           {/* Scrollable list — KEY FIX: fixed height + overflow-y-auto */}
           <div
             ref={playlistRef}
-            className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-hide min-h-0"
-            style={{ maxHeight: "calc(100% - 120px)" }}
+            className="flex-1 overflow-y-auto space-y-3 pr-1 min-h-0 scrollbar-thin scrollbar-thumb-white/20 hover:scrollbar-thumb-white/50"
+            style={{
+              maxHeight: `${visibleCount * 82}px`,
+            }}
+            onWheel={(e) => e.stopPropagation()} // ← ADD THIS
+            onTouchMove={(e) => e.stopPropagation()} // ← AND THIS
           >
             {filteredVideos.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-40 text-white/20 gap-3">
                 <PlayCircle size={48} strokeWidth={1} />
-                <span className="font-black uppercase tracking-widest text-xs">No videos found</span>
+                <span className="font-black uppercase tracking-widest text-xs">
+                  No videos found
+                </span>
               </div>
             ) : (
               filteredVideos.map((video) => (
@@ -233,7 +267,9 @@ export default function HomeVideoGallery() {
                     </div>
                     <h4
                       className={`font-black text-sm leading-snug line-clamp-2 transition-colors ${
-                        currentVideo?.id === video.id ? "text-india-gold" : "text-white"
+                        currentVideo?.id === video.id
+                          ? "text-india-gold"
+                          : "text-white"
                       }`}
                     >
                       {video.title}
@@ -253,16 +289,11 @@ export default function HomeVideoGallery() {
             onClick={() => scrollPlaylist("down")}
             className="w-full flex items-center justify-center py-1 text-white/30 hover:text-india-gold transition-colors"
           >
-            <ChevronDown size={20} />
-          </button>
-
-          {/* View More */}
-          <button className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-black uppercase tracking-[0.2em] text-xs hover:bg-white/10 hover:border-india-gold/30 transition-all flex items-center justify-center gap-2 group shrink-0">
-            View More Videos
-            <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform text-india-gold" />
+            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+              <ChevronDown size={25} className="text-india-gold" />
+            </div>
           </button>
         </div>
-
       </div>
     </div>
   );
