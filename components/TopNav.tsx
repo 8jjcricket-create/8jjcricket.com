@@ -180,6 +180,9 @@ export default function TopNav() {
     // ✅ Save selection (helps in production if cookie is blocked/misread)
     window.localStorage.setItem(LANG_STORAGE_KEY, next);
 
+    // 🔴 Dispatch a custom event to stop all video playback before reload/language change
+    window.dispatchEvent(new Event("stop-all-videos"));
+
     // ✅ English: force reset to /en/en
     if (next === "en") {
       clearAllGoogTransCookies();
