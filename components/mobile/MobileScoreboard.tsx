@@ -65,7 +65,7 @@ export default function MobileScoreboard({ id }: { id: string }) {
     return (
       <div className="card">
         Failed to load scoreboard.{" "}
-        <span className="text-xs text-gray-500">
+        <span className="text-xs" style={{ color: '#8BC0EB' }}>
           {String((error as any).message)}
         </span>
       </div>
@@ -164,7 +164,7 @@ export default function MobileScoreboard({ id }: { id: string }) {
         </p>
         <p className="text-sm">
           {fx.note ? (
-            <span className="text-gray-700"> {fx.note}</span>
+            <span style={{ color: '#8BC0EB' }}> {fx.note}</span>
           ) : null}{" "}
         </p>
         <div className="">
@@ -186,7 +186,7 @@ export default function MobileScoreboard({ id }: { id: string }) {
             </div>
           )}
 
-          <p className="text-xs text-gray-600 mt-2 text-right">
+          <p className="text-xs mt-2 text-right" style={{ color: '#8BC0EB' }}>
             {fx.round || "—"} · {formatDate(fx.starting_at)}
           </p>
         </div>
@@ -218,7 +218,7 @@ export default function MobileScoreboard({ id }: { id: string }) {
                       <TeamBadge team={toBadgeTeam(t)} hideName />
                       <div className="font-medium">{label}</div>
                     </div>
-                    <div className="text-xs text-gray-600">
+                    <div className="text-xs" style={{ color: '#8BC0EB' }}>
                       Inn {inn.inning ?? "—"}
                     </div>
                   </div>
@@ -226,7 +226,7 @@ export default function MobileScoreboard({ id }: { id: string }) {
                     {inn.score ?? "–"}/{inn.wickets ?? "–"} ({inn.overs ?? "–"}{" "}
                     ov)
                   </div>
-                  <div className="text-xs text-gray-500 mt-0.5">
+                  <div className="text-xs mt-0.5" style={{ color: '#8BC0EB' }}>
                     PP1 {inn.pp1 ?? "—"} · PP2 {inn.pp2 ?? "—"}
                   </div>
                 </div>
