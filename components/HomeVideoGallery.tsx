@@ -5,6 +5,9 @@ import { Play, PlayCircle, ChevronUp, ChevronDown } from "lucide-react";
 import { VideoSectionItem } from "@/types/video";
 import { useAudio } from "@/context/AudioContext";
 import ThumbnailImg from "../public/images/thumbnail.webp";
+import AmbientVideoPlayer, {
+  AmbientVideoPlayerHandle,
+} from "./AmbientVideoPlayer";
 
 export default function HomeVideoGallery() {
   const { isPlaying, togglePlay } = useAudio();
@@ -15,6 +18,7 @@ export default function HomeVideoGallery() {
   );
   const playlistRef = React.useRef<HTMLDivElement>(null);
   const videoRef = React.useRef<HTMLVideoElement>(null);
+  const playerRef = React.useRef<AmbientVideoPlayerHandle>(null);
   const wasPlayingBefore = React.useRef<boolean>(false);
   const isPlayingRef = React.useRef<boolean>(isPlaying);
   const userHasInteracted = React.useRef(false);
@@ -219,29 +223,29 @@ export default function HomeVideoGallery() {
           <div className="relative rounded-3xl overflow-hidden aspect-video w-full bg-black">
             {currentVideo ? (
               <div className="relative w-full h-full">
-                <video
-                  ref={videoRef}
-                  key={currentVideo.id}
+                <AmbientVideoPlayer
+                  ref={playerRef}
                   src={normalizeVideoUrl(currentVideo.video_path)}
-                  preload="none"
                   poster={
                     normalizeVideoUrl(currentVideo.thumbnail_url || "") ||
                     ThumbnailImg.src
                   }
-                  controls
-                  className="w-full h-full object-cover"
-                  onPlay={() => setIsPaused(false)}
-                  onPause={() => setIsPaused(true)}
+                  onPlay={() => {
+                    setIsPaused(false);
+                    handlePlay();
+                  }}
+                  onPause={() => {
+                    setIsPaused(true);
+                    handlePause();
+                  }}
                 />
                 {/* Animated play button overlay — visible only when paused */}
                 {isPaused && (
                   <div
-                    className="absolute inset-0 flex items-center justify-center bg-black/25 cursor-pointer"
+                    className="absolute inset-0 flex items-center justify-center bg-black/25 cursor-pointer z-10"
                     onClick={() => {
-                      if (videoRef.current) {
-                        videoRef.current.play();
-                        userHasInteracted.current = true;
-                      }
+                      playerRef.current?.play();
+                      userHasInteracted.current = true;
                     }}
                   >
                     <div className="relative flex items-center justify-center">
