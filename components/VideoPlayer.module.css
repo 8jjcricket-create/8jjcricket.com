@@ -40,11 +40,14 @@
   user-select: none;
   overflow: hidden;
   max-width: 900px;
-  border-radius: 1.5rem;
+  border-radius: 5px;
   background: #000;
   aspect-ratio: 16 / 9;
   position: relative;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 0 30px 8px rgba(250, 204, 21, 0.5),
+    0 0 60px 15px rgba(250, 204, 21, 0.3),
+    0 8px 40px rgba(250, 204, 21, 0.4);
   z-index: 1;
 }
 
@@ -64,7 +67,6 @@
   opacity: 0;
   bottom: -15px;
   transition: all 0.08s ease;
-  border-radius: 0 0 1.5rem 1.5rem;
 }
 
 .container.showControls .wrapper {
@@ -274,50 +276,79 @@
   width: 100%;
 }
 
-/* Responsive Styles */
 @media screen and (max-width: 540px) {
-  .wrapper .videoControls {
+  .wrapper .video-controls {
     padding: 3px 10px 7px;
   }
-
   .options input,
-  .progressArea span {
+  .progress-area span {
     display: none !important;
   }
-
   .options button {
     height: 30px;
     width: 30px;
     font-size: 17px;
   }
-
-  .options .videoTimer {
+  .options .video-timer {
     margin-left: 5px;
   }
-
-  .videoTimer .separator {
+  .video-timer .separator {
     font-size: 14px;
     margin: 0 2px;
   }
-
+  .options button :where(i, span) {
+    line-height: 30px;
+  }
   .options button span {
     font-size: 21px;
   }
-
-  .options .videoTimer,
-  .progressArea span,
-  .speedOptions li {
+  .options .video-timer,
+  .progress-area span,
+  .speed-options li {
     font-size: 12px;
   }
-
-  .playbackContent .speedOptions {
+  .playback-content .speed-options {
     width: 75px;
     left: -30px;
     bottom: 30px;
   }
-
-  .speedOptions li {
+  .speed-options li {
     margin: 1px 0;
     padding: 3px 0 3px 10px;
   }
+  .right .pic-in-pic {
+    display: none;
+  }
+}
+.blur {
+  width: 150%;
+  height: 150%;
+  background-color: rgba(0, 0, 0, 0.5);
+  filter: blur(25px);
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.git-icon {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background-color: #fff;
+  right: 20px;
+  top: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: #eee 2px 3px 10px;
+  z-index: 2;
+}
+.git-icon img {
+  height: 30px;
+  width: 30px;
+  border-radius: 15px;
+}
+.git-icon:hover {
+  background-color: #ddd;
+  box-shadow: #eee 3px 5px 10px;
 }

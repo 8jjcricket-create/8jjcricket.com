@@ -220,7 +220,7 @@ export default function HomeVideoGallery() {
         {/* ── CENTER: Video Player ── */}
         <div className="flex flex-col gap-4 min-h-0 min-w-0 overflow-hidden">
           {/* Player card */}
-          <div className="relative rounded-3xl overflow-hidden aspect-video w-full bg-black">
+          <div className="relative rounded-3xl overflow-hidden aspect-video w-full">
             {currentVideo ? (
               <div className="relative w-full h-full">
                 <AmbientVideoPlayer
@@ -242,7 +242,7 @@ export default function HomeVideoGallery() {
                 {/* Animated play button overlay — visible only when paused */}
                 {isPaused && (
                   <div
-                    className="absolute inset-0 flex items-center justify-center bg-black/25 cursor-pointer z-10"
+                    className="absolute inset-0 flex items-center justify-center cursor-pointer z-10"
                     onClick={() => {
                       playerRef.current?.play();
                       userHasInteracted.current = true;
