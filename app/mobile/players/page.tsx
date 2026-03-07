@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import BottomNav from "@/components/BottomNav";
 import PlayerCard from "@/components/games/PlayerCard";
 import { debounce } from "@/lib/debounce";
+import MobilePagination from "@/components/mobile/MobilePagination";
 
 type Country = { id: number; name: string };
 
@@ -325,35 +326,11 @@ export default function PlayersPage() {
                           ))}
                         </div>
 
-                        {totalPages > 1 && (
-                          <div className="mt-6 flex items-center justify-between  text-sm">
-                            <button
-                              disabled={page === 1}
-                              onClick={() => {
-                                setPage((x) => Math.max(1, x - 1));
-                                window.scrollTo({ top: 0, behavior: "smooth" });
-                              }}
-                              className="rounded-full border border-amber-400/30 bg-slate-900/80 px-3 py-1.5 text-amber-200 backdrop-blur-sm hover:bg-slate-800/80 hover:border-amber-400/50 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                              Prev
-                            </button>
-
-                            <span className="rounded-full border border-white/20 bg-black/50 px-3 py-1.5 text-amber-300 backdrop-blur-xl">
-                              Page {page} of {totalPages}
-                            </span>
-
-                            <button
-                              disabled={page === totalPages}
-                              onClick={() => {
-                                setPage((x) => Math.min(totalPages, x + 1));
-                                window.scrollTo({ top: 0, behavior: "smooth" });
-                              }}
-                              className="rounded-full border border-amber-400/30 bg-slate-900/80 px-3 py-1.5 text-amber-200 backdrop-blur-sm hover:bg-slate-800/80 hover:border-amber-400/50 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                              Next
-                            </button>
-                          </div>
-                        )}
+                        <MobilePagination
+                          page={page}
+                          totalPages={totalPages}
+                          setPage={setPage}
+                        />
                       </>
                     )}
                   </>
