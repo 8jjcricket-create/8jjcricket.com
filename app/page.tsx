@@ -237,7 +237,7 @@ export default async function HomePage() {
             />
 
             {/* ── WAVING FLAGS (left + right) ── */}
-            <CricketSideDecor />
+            {/* <CricketSideDecor /> */}
 
             {/* SIDE PATTERN BACKGROUND */}
             <div className="pointer-events-none absolute inset-0 hidden lg:block">
